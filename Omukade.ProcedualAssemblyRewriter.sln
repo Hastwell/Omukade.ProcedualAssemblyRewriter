@@ -7,13 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Omukade.AutoPAR", "Omukade.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7B34EA4D-55EE-4222-BC4A-21D2F937C513}"
 	ProjectSection(SolutionItems) = preProject
-		..\Omukade.ProcedualAssemblyRewriter-legacy\.gitignore = ..\Omukade.ProcedualAssemblyRewriter-legacy\.gitignore
-		..\Omukade.ProcedualAssemblyRewriter-legacy\LICENSE.txt = ..\Omukade.ProcedualAssemblyRewriter-legacy\LICENSE.txt
-		..\Omukade.ProcedualAssemblyRewriter-legacy\logo.png = ..\Omukade.ProcedualAssemblyRewriter-legacy\logo.png
-		..\Omukade.ProcedualAssemblyRewriter-legacy\README.md = ..\Omukade.ProcedualAssemblyRewriter-legacy\README.md
+		.gitignore = .gitignore
+		LICENSE.txt = LICENSE.txt
+		logo.png = logo.png
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Omukade.ManualPAR", "Omukade.ManualPAR\Omukade.ManualPAR.csproj", "{4E77C5AE-BC0A-4ED9-8512-88ACD7B76235}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Omukade.ManualPAR", "Omukade.ManualPAR\Omukade.ManualPAR.csproj", "{4E77C5AE-BC0A-4ED9-8512-88ACD7B76235}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
