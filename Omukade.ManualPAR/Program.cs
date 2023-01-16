@@ -27,10 +27,30 @@ internal class Program
     {
         HashSet<string> filesToSkip = new HashSet<string>(new string[] { "Newtonsoft.Json.dll", "Accessibility.dll", "mscorlib.dll", "System.Web.dll", "System.Xml.dll", "System.dll", "System.Data.dll", "System.Core.dll" });
 
-        string? sourceDirectory = args.FirstOrDefault(arg => !arg.StartsWith("-"));
         enableDryRun = args.Contains("--dry-run");
 
-        if(sourceDirectory == null)
+        string? sourceDirectory;
+        if(args.Contains("--auto-detect-ptcgl"))
+        {
+            sourceDirectory = InstallationFinder.FindPtcglInstallAssemblyDirectory();
+            if(sourceDirectory == null)
+            {
+                Console.Error.WriteLine("Can't autodetect PTCGL installation directory.");
+                return;
+            }
+
+            if(!Directory.Exists(sourceDirectory))
+            {
+                Console.Error.WriteLine($"PTCGL installation directory found, but doesn't appear to exist? {sourceDirectory}");
+                Console.Error.WriteLine("(possibly a bad install/uninstall)");
+                return;
+            }
+        }
+        else
+        {
+            sourceDirectory = args.FirstOrDefault(arg => !arg.StartsWith("-"));
+        }
+        if (sourceDirectory == null)
         {
             Console.Error.WriteLine("Target directory not specified; cannot perform processing.");
             return;
