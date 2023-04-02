@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Omukade.ManualPAR": {
+      "commandName": "Project",
+      "commandLineArgs": "--fetch-update"
+    }
+  }
+}

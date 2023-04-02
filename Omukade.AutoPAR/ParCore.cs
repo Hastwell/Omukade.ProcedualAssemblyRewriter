@@ -25,6 +25,11 @@ namespace Omukade.AutoPAR
         private const int FILESIZE_PADDING = 4096;
 
         /// <summary>
+        /// A list of processors that transform loaded assemblies. Each <see cref="Action(TypeDefinition)"/> in the list can optionally perform processing on a type. The default processor is <see cref="CecilHelpers.PublicifyType"/>.
+        /// </summary>
+        public List<Action<TypeDefinition>> CecilProcessors = new List<Action<TypeDefinition>> { new Action<TypeDefinition>(CecilHelpers.PublicifyType) };
+
+        /// <summary>
         /// Processes an assembly at the given location by making all members public.
         /// </summary>
         /// <param name="sourceFile">The location of the assembly to process.</param>
@@ -35,7 +40,10 @@ namespace Omukade.AutoPAR
 
             foreach (TypeDefinition type in currentAssembly.Types)
             {
-                CecilHelpers.PublicifyType(type);
+                foreach(Action<TypeDefinition> processor in CecilProcessors)
+                {
+                    processor(type);
+                }
             }
 
             // Allocate a MemoryStream that can reasonably hold the updated assembly.

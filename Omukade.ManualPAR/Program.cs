@@ -16,7 +16,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
+using Newtonsoft.Json;
 using Omukade.AutoPAR;
+using Omukade.AutoPAR.Rainier;
 
 internal class Program
 {
@@ -25,21 +27,56 @@ internal class Program
 
     private static void Main(string[] args)
     {
-        HashSet<string> filesToSkip = new HashSet<string>(new string[] { "Newtonsoft.Json.dll", "Accessibility.dll", "mscorlib.dll", "System.Web.dll", "System.Xml.dll", "System.dll", "System.Data.dll", "System.Core.dll" });
-
         enableDryRun = args.Contains("--dry-run");
 
+        if(args.Contains("--fetch-update"))
+        {
+            FetchUpdate(args);
+        }
+
+        ParseArgsForAssemblyUpdate(args);
+    }
+
+    static void FetchUpdate(string[] args)
+    {
+        UpdaterManifest updateManifest = RainierFetcher.GetUpdateManifestAsync().Result;
+        if(RainierFetcher.DoesNeedUpdate(updateManifest))
+        {
+            LocalizedReleaseNote releaseNote = RainierFetcher.GetLocalizedReleaseNoteAsync(updateManifest).Result;
+            File.WriteAllText(releaseNote.ComputedBuildVersion + "-manifest.json", JsonConvert.SerializeObject(updateManifest, Formatting.Indented));
+            File.WriteAllText(releaseNote.ComputedBuildVersion + "-releasenotes.json", JsonConvert.SerializeObject(releaseNote, Formatting.Indented));
+
+            if(enableDryRun)
+            {
+                Console.WriteLine($"Dry Run: an update would be downloaded - {releaseNote.ComputedBuildVersion}");
+            }
+            else
+            {
+                Console.WriteLine("Downloading update...");
+                RainierFetcher.DownloadUpdateFile(updateManifest).Wait();
+                File.Copy(RainierFetcher.UpdateFilename, releaseNote.ComputedBuildVersion + ".zip", overwrite: true);
+
+                Console.WriteLine("Extracting update...");
+                RainierFetcher.ExtractUpdateFile();
+            }
+        }
+    }
+
+    static void ParseArgsForAssemblyUpdate(string[] args)
+    {
+        HashSet<string> filesToSkip = new HashSet<string>(new string[] { "Newtonsoft.Json.dll", "Accessibility.dll", "mscorlib.dll", "System.Web.dll", "System.Xml.dll", "System.dll", "System.Data.dll", "System.Core.dll" });
+
         string? sourceDirectory;
-        if(args.Contains("--auto-detect-ptcgl"))
+        if (args.Contains("--auto-detect-ptcgl"))
         {
             sourceDirectory = InstallationFinder.FindPtcglInstallAssemblyDirectory();
-            if(sourceDirectory == null)
+            if (sourceDirectory == null)
             {
                 Console.Error.WriteLine("Can't autodetect PTCGL installation directory.");
                 return;
             }
 
-            if(!Directory.Exists(sourceDirectory))
+            if (!Directory.Exists(sourceDirectory))
             {
                 Console.Error.WriteLine($"PTCGL installation directory found, but doesn't appear to exist? {sourceDirectory}");
                 Console.Error.WriteLine("(possibly a bad install/uninstall)");
@@ -52,8 +89,17 @@ internal class Program
         }
         if (sourceDirectory == null)
         {
-            Console.Error.WriteLine("Target directory not specified; cannot perform processing.");
-            return;
+            /// Attempt to use the <see cref="RainierFetcher"/> update folder. If it doesn't exist, then fail.
+            
+            if(Directory.Exists(RainierFetcher.ComputedUpdateDirectory))
+            {
+                sourceDirectory = RainierFetcher.ComputedUpdateDirectory;
+            }
+            else
+            {
+                Console.Error.WriteLine("Target directory not specified; cannot perform processing.");
+                return;
+            }
         }
 
         string targetDirectory = sourceDirectory.TrimEnd(Path.DirectorySeparatorChar) + "_PAR";
