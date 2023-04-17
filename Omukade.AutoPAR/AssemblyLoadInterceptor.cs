@@ -5,7 +5,7 @@ namespace Omukade.AutoPAR
     public static class AssemblyLoadInterceptor
     {
         private static string searchFolder;
-        private static ParCore parCore = new ParCore();
+        public static ParCore ParCore { get; } = new ParCore();
 
         /// <summary>
         /// Initializes AutoPAR on assemblies found in <see cref="searchFolder"/> via a "file-not-found" hook on the default <see cref="AssemblyLoadContext"/>.
@@ -38,7 +38,7 @@ namespace Omukade.AutoPAR
                 return null;
             }
 
-            using MemoryStream assemblyStream = parCore.ProcessAssembly(sourceFileLocation);
+            using MemoryStream assemblyStream = ParCore.ProcessAssembly(sourceFileLocation);
             return loadContext.LoadFromStream(assemblyStream);
         }
     }

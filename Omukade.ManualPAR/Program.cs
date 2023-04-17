@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
+using Mono.Cecil;
 using Newtonsoft.Json;
 using Omukade.AutoPAR;
 using Omukade.AutoPAR.Rainier;
@@ -100,6 +101,11 @@ internal class Program
                 Console.Error.WriteLine("Target directory not specified; cannot perform processing.");
                 return;
             }
+        }
+
+        if(args.Contains("--rainier-specific"))
+        {
+            parCore.CecilProcessors.Add(new Action<TypeDefinition>(RainierSpecificPatches.MakeGameStateCloneVirtual));
         }
 
         string targetDirectory = sourceDirectory.TrimEnd(Path.DirectorySeparatorChar) + "_PAR";

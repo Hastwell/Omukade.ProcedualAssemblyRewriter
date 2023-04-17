@@ -2,7 +2,7 @@
   "profiles": {
     "Omukade.ManualPAR": {
       "commandName": "Project",
-      "commandLineArgs": "--fetch-update"
+      "commandLineArgs": "--fetch-update --rainier-specific"
     }
   }
 }
