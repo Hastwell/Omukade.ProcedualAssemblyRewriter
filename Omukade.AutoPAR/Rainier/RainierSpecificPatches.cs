@@ -16,8 +16,7 @@ namespace Omukade.AutoPAR.Rainier
             MethodDefinition? copyStateMethod = type.Methods.FirstOrDefault(m => m.Name == "CopyState");
             if(copyStateMethod == null)
             {
-                Console.Error.WriteLine("WARN: Found GameState, but no CopyState was found.");
-                return;
+                throw new InvalidOperationException("Found GameState, but no CopyState was found.");
             }
 
             copyStateMethod.IsVirtual = true;

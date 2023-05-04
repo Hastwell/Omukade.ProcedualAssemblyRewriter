@@ -2,10 +2,23 @@ using Omukade.AutoPAR.Rainier;
 
 namespace Omukade.AutoPAR.Tests
 {
-    public class TestRainierFetcher
+    public class TestRainierFetcher : IDisposable
     {
         readonly string UPDATE_FILE_FNAME = Path.Join("Content", "sample-update.zip");
         const string UPDATE_FILE_MD5 = "0c2dd059463023ab001a059105a1fa85";
+
+        public TestRainierFetcher()
+        {
+            RainierFetcher.UpdateZipFilename = Path.Combine(Environment.CurrentDirectory, "rainier-client.zip");
+            RainierFetcher.UpdateDirectory = Path.Combine(Environment.CurrentDirectory, "rainier-client");
+        }
+
+        public void Dispose()
+        {
+            RainierFetcher.UpdateZipFilename = RainierFetcher.GetDefaultUpdateZipFilename();
+            RainierFetcher.UpdateDirectory = RainierFetcher.GetDefaultUpdateDirectory();
+        }
+
 
         [Fact]
         public async void CanFetchManifestsAtAll()
@@ -50,18 +63,31 @@ namespace Omukade.AutoPAR.Tests
         }
 
         [Fact]
-        public void ExtractUpdate()
+        public void ExtractUpdateFreshSlate()
         {
-            File.Copy(UPDATE_FILE_FNAME, RainierFetcher.UpdateFilename, overwrite: true);
-            string BASE_PATH = Path.GetFileNameWithoutExtension(RainierFetcher.UpdateFilename);
+            File.Copy(UPDATE_FILE_FNAME, RainierFetcher.UpdateZipFilename, overwrite: true);
 
-            if(Directory.Exists(BASE_PATH))
+            if(Directory.Exists(RainierFetcher.UpdateDirectory))
             {
-                Directory.Delete(BASE_PATH, recursive: true);
+                Directory.Delete(RainierFetcher.UpdateDirectory, recursive: true);
             }
 
             RainierFetcher.ExtractUpdateFile();
-            Assert.True(File.Exists(Path.Combine(BASE_PATH, "example.file.dll")), "Expected file didn't get created.");
+            Assert.True(File.Exists(Path.Combine(RainierFetcher.UpdateDirectory, "example.file.dll")), "Expected file didn't get created.");
+        }
+
+        [Fact]
+        public void ExtractUpdateExistingUpdateDirectory()
+        {
+            File.Copy(UPDATE_FILE_FNAME, RainierFetcher.UpdateZipFilename, overwrite: true);
+
+            string fileToDelete = Path.Combine(RainierFetcher.UpdateDirectory, "test-file.txt");
+            Directory.CreateDirectory(RainierFetcher.UpdateDirectory);
+            File.WriteAllText(fileToDelete, "test data that should be deleted");
+
+            RainierFetcher.ExtractUpdateFile();
+            Assert.True(File.Exists(Path.Combine(RainierFetcher.UpdateDirectory, "example.file.dll")), "Expected file didn't get created.");
+            Assert.False(File.Exists(fileToDelete), "File expected to be deleted during update extraction is still present.");
         }
 
         [Fact]

@@ -11,6 +11,7 @@ namespace Omukade.AutoPAR
     /// <summary>
     /// Helper to locate the installation path of certain well-known programs/games.
     /// </summary>
+    [Obsolete("Use RainierFetcher to auto-update Rainier without depending on a user-managed local install")]
     public static class InstallationFinder
     {
         /// <summary>

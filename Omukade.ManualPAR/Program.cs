@@ -55,7 +55,7 @@ internal class Program
             {
                 Console.WriteLine("Downloading update...");
                 RainierFetcher.DownloadUpdateFile(updateManifest).Wait();
-                File.Copy(RainierFetcher.UpdateFilename, releaseNote.ComputedBuildVersion + ".zip", overwrite: true);
+                File.Copy(RainierFetcher.UpdateZipFilename, releaseNote.ComputedBuildVersion + ".zip", overwrite: true);
 
                 Console.WriteLine("Extracting update...");
                 RainierFetcher.ExtractUpdateFile();
@@ -92,9 +92,9 @@ internal class Program
         {
             /// Attempt to use the <see cref="RainierFetcher"/> update folder. If it doesn't exist, then fail.
             
-            if(Directory.Exists(RainierFetcher.ComputedUpdateDirectory))
+            if(Directory.Exists(RainierFetcher.UpdateDirectory))
             {
-                sourceDirectory = RainierFetcher.ComputedUpdateDirectory;
+                sourceDirectory = RainierFetcher.UpdateDirectory;
             }
             else
             {

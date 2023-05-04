@@ -36,8 +36,25 @@ namespace Omukade.AutoPAR.Rainier
         /// <summary>
         /// The filename that game client data is saved to. If this filename is changed in an existing install, update files will need to be redownloaded.
         /// </summary>
-        public static string UpdateFilename = "rainier-client.zip";
-        public static string ComputedUpdateDirectory => Path.GetFileNameWithoutExtension(UpdateFilename);
+        public static string UpdateZipFilename = GetDefaultUpdateZipFilename();
+
+        [Obsolete("Use " + nameof(UpdateDirectory))]
+        public static string ComputedUpdateDirectory => UpdateDirectory;
+
+        /// <summary>
+        /// The directory updates will be downloaded to, and where game binaries can be read from for AutoPAR. Defaults to RainierSharedDataHelper.GetSharedDataDirectory() / rainier-client
+        /// </summary>
+        public static string UpdateDirectory = GetDefaultUpdateDirectory();
+
+        /// <summary>
+        /// The initial computed value of <see cref="UpdateDirectory"/>. Typically not used unless the field is changed for some reason and it needs to be changed back to the initial default.
+        /// </summary>
+        public static string GetDefaultUpdateDirectory() => Path.Combine(RainierSharedDataHelper.GetSharedDataDirectory(), "rainier-client");
+
+        /// <summary>
+        /// The initial computed value of <see cref="UpdateZipFilename"/>. Typically not used unless the field is changed for some reason and it needs to be changed back to the initial default.
+        /// </summary>
+        public static string GetDefaultUpdateZipFilename() => Path.Combine(RainierSharedDataHelper.GetSharedDataDirectory(), "rainier-client.zip");
 
         /// <summary>
         /// Fetches update manifest data from the PTCGL CDN, containing eg the update URL + hash.
@@ -67,13 +84,13 @@ namespace Omukade.AutoPAR.Rainier
         }
 
         /// <summary>
-        /// Determines if based on the current manifest vs a previously downloaded file at <see cref="UpdateFilename"/>, a new update file needs to be downloaded.
+        /// Determines if based on the current manifest vs a previously downloaded file at <see cref="UpdateZipFilename"/>, a new update file needs to be downloaded.
         /// </summary>
         /// <param name="manifest">The <see cref="UpdaterManifest"/> retreived from CDN via <see cref="GetUpdateManifestAsync"/></param>
         /// <returns>True if the update file has been changed since previously downloaded, or no previous cached copy exists. False if no download is needed.</returns>
         public static bool DoesNeedUpdate(UpdaterManifest manifest)
         {
-            if(!File.Exists(UpdateFilename))
+            if(!File.Exists(UpdateZipFilename))
             {
                 return true;
             }
@@ -106,7 +123,8 @@ namespace Omukade.AutoPAR.Rainier
         /// <exception cref="InvalidDataException"></exception>
         internal static async Task DownloadUpdateFileMockable(UpdaterManifest manifest, Stream responseStream)
         {
-            using FileStream updateFileStream = new FileStream(UpdateFilename, FileMode.Create, FileAccess.Write, FileShare.None);
+            Directory.CreateDirectory(Path.GetDirectoryName(UpdateZipFilename));
+            using FileStream updateFileStream = new FileStream(UpdateZipFilename, FileMode.Create, FileAccess.Write, FileShare.None);
             await responseStream.CopyToAsync(updateFileStream);
             updateFileStream.Close();
 
@@ -126,23 +144,22 @@ namespace Omukade.AutoPAR.Rainier
         public static void ExtractUpdateFile(bool deleteExistingUpdateFolder = true)
         {
             const string MANAGED_FOLDER = "Pokemon TCG Live_Data/Managed/";
-            string BASE_FOLDER = RainierFetcher.ComputedUpdateDirectory;
 
-            if (!File.Exists(UpdateFilename)) throw new FileNotFoundException($"The update file was not found - {UpdateFilename}");
+            if (!File.Exists(UpdateZipFilename)) throw new FileNotFoundException($"The update file was not found - {UpdateZipFilename}");
 
-            if(deleteExistingUpdateFolder && Directory.Exists(BASE_FOLDER))
+            if(deleteExistingUpdateFolder && Directory.Exists(RainierFetcher.UpdateDirectory))
             {
-                Directory.Delete(BASE_FOLDER, recursive: true);
+                Directory.Delete(RainierFetcher.UpdateDirectory, recursive: true);
             }
 
-            using ICSharpCode.SharpZipLib.Zip.ZipFile zipFile = new ICSharpCode.SharpZipLib.Zip.ZipFile(UpdateFilename);
+            using ICSharpCode.SharpZipLib.Zip.ZipFile zipFile = new ICSharpCode.SharpZipLib.Zip.ZipFile(UpdateZipFilename);
             foreach(ZipEntry entry in zipFile)
             {
                 if (!entry.IsFile) continue;
                 if (!entry.Name.StartsWith(MANAGED_FOLDER)) continue;
 
                 string normalizedPath = Path.PathSeparator == '/' ? entry.Name : entry.Name.Replace('/', Path.PathSeparator);
-                string directoryPath = Path.Combine( BASE_FOLDER, Path.GetDirectoryName(normalizedPath.AsSpan().Slice(MANAGED_FOLDER.Length)).ToString());
+                string directoryPath = Path.Combine(RainierFetcher.UpdateDirectory, Path.GetDirectoryName(normalizedPath.AsSpan().Slice(MANAGED_FOLDER.Length)).ToString());
                 Directory.CreateDirectory(directoryPath);
 
                 using Stream fileContentsStream = zipFile.GetInputStream(entry);
@@ -154,7 +171,7 @@ namespace Omukade.AutoPAR.Rainier
         static string ComputeHashForUpdateFile()
         {
             byte[] finalHash;
-            using (FileStream existingUpdateFile = new FileStream(UpdateFilename, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream existingUpdateFile = new FileStream(UpdateZipFilename, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 using MD5 hashFunction = MD5.Create();
                 finalHash = hashFunction.ComputeHash(existingUpdateFile);
