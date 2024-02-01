@@ -51,12 +51,18 @@ with AutoPAR handling this process at run-time. This can be accomplished by:
 * Use of `CopyLocal = false` on all PAR assemblies, so assemblies are not copied to the output folder.
 * Create a folder in your output folder, copy all needed _unmodified_ assemblies to it, and direct AutoPAR to this folder -OR- use a configuration setting to point AutoPAR to the location of the _unmodified_ assemblies.
 
-Regardless of Auto or Manual mode, AutoPAR must be initialized as soon as possible before any code that could reference the types loaded by AutoPAR is called.
-No types from an AutoPAR processed assembly can be used in any class or method used before or during the initialization of AutoPAR, as the .NET runtime will try to read type metadata (that can't be found yet) before AutoPAR is initialized.
+AutoPAR must be initialized as soon as possible before any code that could reference the types loaded by AutoPAR is called.
+No types from an AutoPAR processed assembly can be used in any class or method used before or during the initialization of AutoPAR, as the .NET runtime will try to read type metadata (that can't be found yet) before AutoPAR is initialized, as this _will_ give you exceptions about loading types.
 Consider eg, a bootstraper `Main()` method that then calls the rest of your application defined in another type and method.
 
-Developers leveraging any PAR mechanism need to be mindful not to accidentially distribute the modified pre-processed assemblies used for compilation, as this may be interpreted as distributing a derived work.
+Developers leveraging any PAR mechanism (manual or auto) need to be mindful not to accidentially distribute the modified pre-processed assemblies used for compilation, as this may be interpreted as distributing a derived work.
 Every effort should be made to ensure that an end-user can make application work by downloading or using an existing install of an official 1st-party package that contains all needed assemblies, and copying those assemblies to whatever folder was configured in AutoPAR. (This can be in-place if eg, the location of an existing install containing the needed assemblies can be determined/supplied.)
+
+### Common Weird Issues
+#### AssemblyLoadException before your Main() is even called
+Your `Main()`, the class that contains it (eg, the default `Program` for console apps), or a class with a static constructor refers to a type in an assembly processed by AutoPAR. As AutoPAR has not yet been initialized, refering to such classes will fail.
+
+Refactor the code to minimize these references and initializations until after AutoPAR is initialized, then call your other initalization methods as needed.
 
 ### Other Notes on Processed Assemblies
 * Processed assemblies retain their original assembly name, version, and other attributes.
