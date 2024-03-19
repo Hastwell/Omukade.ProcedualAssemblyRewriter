@@ -18,13 +18,17 @@ AutoPAR permits this process to occur without the need to distribute modified 3r
 ## Usage - ManualPAR
 ManualPAR is a companion tool that batch processes assemblies in a folder using AutoPAR. This tool is mainly intended to prepare preprocessed files that can be compiled against.
 
-Windows: ```omukade-par.exe [--parallel] [--dry-run] (source folder)```
+Windows: ```omukade-par.exe [--parallel] [--dry-run] [--rainier-specific] [--fetch-update] [--auto-detect-ptcgl] (source folder)```
 
-Linux: ```omukade-par [--parallel] [--dry-run] (source folder)```
+Linux: ```omukade-par [--parallel] [--dry-run] [--rainier-specific] [--fetch-update] [--auto-detect-ptcgl] (source folder)```
 
-* `(source folder)` - **required**, the folder containing .NET assemblies to update. (The original files will not be changed.)
+* `(source folder)` - The folder containing .NET assemblies to update. (The original files will not be changed.) If not specifed, a PTCGL update in Omukade Shared Data Directory will be used as a source.
 * `--parallel` - Performance tweak to update assembiles in parallel instead of sequentially. This process is typically already fast enough you probably don't need it.
 * `--dry-run` - Do the work, but don't save anything. You probably don't need this either; it's mainly for testing.
+* `--rainier-specific` - **required for PTCGL development.** Perform specific additional patches needed to support PTCGL companion software such as Omukade Cheyenne.
+* `--fetch-update` - **PTCGL specific.** Checks for updates to the PTCGL client and downloads them to the Omukade Shared Data Directory before processing begins.
+* `--auto-detect-ptcgl`- **PTCGL specific, Windows only.** Detects the PTCGL install directory automatically and uses that as the source folder. Output will be send to `Managed_PAR` under the PTCGL install directory.
+Any other source folder will be ignored.
 
 A new folder in the same location as the source folder with the suffix `_PAR` appended will be created, and used for output files. (eg, suppling `C:\stuff` will output files to `C:\stuff_PAR`)
 

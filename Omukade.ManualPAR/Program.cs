@@ -61,6 +61,10 @@ internal class Program
                 RainierFetcher.ExtractUpdateFile();
             }
         }
+        else
+        {
+            Console.WriteLine("Current version is up-to-date");
+        }
     }
 
     static void ParseArgsForAssemblyUpdate(string[] args)
@@ -105,7 +109,7 @@ internal class Program
 
         if(args.Contains("--rainier-specific"))
         {
-            parCore.CecilProcessors.Add(new Action<TypeDefinition>(RainierSpecificPatches.MakeGameStateCloneVirtual));
+            parCore.CecilProcessors.Add(new(RainierSpecificPatches.MakeGameStateCloneVirtual));
         }
 
         string targetDirectory = sourceDirectory.TrimEnd(Path.DirectorySeparatorChar) + "_PAR";
