@@ -10,12 +10,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		LICENSE.txt = LICENSE.txt
 		logo.png = logo.png
+		package-icon.png = package-icon.png
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Omukade.ManualPAR", "Omukade.ManualPAR\Omukade.ManualPAR.csproj", "{4E77C5AE-BC0A-4ED9-8512-88ACD7B76235}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Omukade.AutoPAR.Tests", "Omukade.AutoPAR.Tests\Omukade.AutoPAR.Tests.csproj", "{36E55821-D560-404C-B6BE-355DAE1E677D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Omukade.AutoPAR.Tests", "Omukade.AutoPAR.Tests\Omukade.AutoPAR.Tests.csproj", "{36E55821-D560-404C-B6BE-355DAE1E677D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,8 +4,18 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Authors>Hastwell</Authors>
+    <Authors>Omukade,Hastwell</Authors>
     <Company>Electrosheep Networks</Company>
+    <Version>1.0.8$(VersionPrefix)</Version>
+    <Title>Omukade Procedural Assembly Rewriter</Title>
+    <Copyright>2021-2024 Electrosheep Networks</Copyright>
+    <PackageProjectUrl>https://github.com/Hastwell/Omukade.ProcedualAssemblyRewriter</PackageProjectUrl>
+    <Description>Core library for Omukade-related software to modify class definitions of an assembly (eg, change member visibility) and dynamically load the patched assembly.</Description>
+    <PackageTags>omukade,par,autopar</PackageTags>
+    <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageIcon>package-icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -15,6 +25,17 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\package-icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />

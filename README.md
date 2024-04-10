@@ -73,4 +73,8 @@ Refactor the code to minimize these references and initializations until after A
 * Signatures are not currently updated or stripped, and will be (correctly) rendered invalid.
 
 ## License
-This software is licensed under the terms of the [GNU AGPL v3.0](https://www.gnu.org/licenses/agpl-3.0.en.html)
+This software is licensed under the terms of the [GNU AGPL v3.0](https://www.gnu.org/licenses/agpl-3.0.en.html).
+
+In some use cases, this software may integrate portions of its own code into other assemblies whether by adding new code and replacing or otherwise modifying existing code.
+License is claimed only on the software performing the transformation, not any resulting transformation it creates. (ie. the resulting library is not AGPL-licensed/tainted).
+However, Cecil Processors added by other libraries may have their own license terms which may taint the resulting library; please consult these library's licenses to ensure this is not an issue for your use-case.
