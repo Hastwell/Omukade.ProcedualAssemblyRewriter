@@ -1,0 +1,8 @@
+﻿<Project DefaultTargets="build">
+    <Target Name="AutoparInit" AfterTargets="BeforeBuild">
+	    <Exec Command="dotnet &quot;$(PkgOmukade_AutoPAR_BuildPipeline_Rainier)\tools\Omukade.AutoPAR.BuildPipeline.Rainier.dll&quot;"
+			    LogStandardErrorAsError="true"
+			    WorkingDirectory="$(PkgOmukade_AutoPAR_BuildPipeline_Rainier)\tools">			
+	    </Exec>
+    </Target>
+</Project>

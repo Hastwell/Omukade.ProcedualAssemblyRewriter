@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Omukade.ManualPAR", "Omukad
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Omukade.AutoPAR.Tests", "Omukade.AutoPAR.Tests\Omukade.AutoPAR.Tests.csproj", "{36E55821-D560-404C-B6BE-355DAE1E677D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Omukade.AutoPAR.BuildPipeline.Rainier", "Omukade.AutoPAR.BuildPipeline.Rainier\Omukade.AutoPAR.BuildPipeline.Rainier.csproj", "{4EA0FDF2-598B-4AF8-9474-1DA96410A554}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{36E55821-D560-404C-B6BE-355DAE1E677D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36E55821-D560-404C-B6BE-355DAE1E677D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36E55821-D560-404C-B6BE-355DAE1E677D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EA0FDF2-598B-4AF8-9474-1DA96410A554}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EA0FDF2-598B-4AF8-9474-1DA96410A554}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EA0FDF2-598B-4AF8-9474-1DA96410A554}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EA0FDF2-598B-4AF8-9474-1DA96410A554}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
