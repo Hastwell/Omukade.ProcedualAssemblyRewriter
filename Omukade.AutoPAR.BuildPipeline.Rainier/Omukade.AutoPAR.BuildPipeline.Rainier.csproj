@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
 	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 	<IsTool>True</IsTool>
-	<Version>1.0.9</Version>
+	<Version>1.0.9.1</Version>
 	<Company>Electrosheep Networks</Company>
 	<Authors>Hastwell,Omukade</Authors>
 	<Description>Tool package for Omukade family and other Rainier-related applications; adds an MSBuild step to provision and update complile-time PAR libraries referenced by an project using AutoPAR before building.</Description>
@@ -16,6 +16,8 @@
 	<PackageIcon>package-icon.png</PackageIcon>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<PackageTags>omukade,par,autopar,pipeline,build</PackageTags>
+	  <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+	  <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
