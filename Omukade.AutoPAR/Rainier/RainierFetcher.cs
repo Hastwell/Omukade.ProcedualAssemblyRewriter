@@ -88,14 +88,35 @@ namespace Omukade.AutoPAR.Rainier
         /// </summary>
         /// <param name="manifest">The <see cref="UpdaterManifest"/> retreived from CDN via <see cref="GetUpdateManifestAsync"/></param>
         /// <returns>True if the update file has been changed since previously downloaded, or no previous cached copy exists. False if no download is needed.</returns>
+        /// <remarks>If an MD5 file exists alongside the ZIP file, it is checked for the hash rather than hashing the entire update file.</remarks>
         public static bool DoesNeedUpdate(UpdaterManifest manifest)
         {
+            string md5Filename = UpdateZipFilename + ".md5";
+
             if(!File.Exists(UpdateZipFilename))
             {
+                // If the ZIP file has been deleted, but the MD5 hasn't, assume this is user error and delete the MD5 file as well so it doesn't cause problems later.
+                if(File.Exists(md5Filename))
+                {
+                    File.Delete(md5Filename);
+                }
+
                 return true;
             }
 
-            string existingUpdateFileHash = ComputeHashForUpdateFile();
+            string existingUpdateFileHash;
+
+            if(File.Exists(md5Filename))
+            {
+                existingUpdateFileHash = File.ReadAllText(md5Filename);
+            }
+            else
+            {
+                existingUpdateFileHash = ComputeHashForUpdateFile();
+
+                // No MD5 file exists with this file yet; create one so it can be referred to later.
+                File.WriteAllText(md5Filename, existingUpdateFileHash);
+            }
 
             return existingUpdateFileHash != manifest.CompressedArtifact.MD5;
         }
@@ -104,14 +125,13 @@ namespace Omukade.AutoPAR.Rainier
         /// Downloads the current version of the PTCGL "Rainier" client.
         /// </summary>
         /// <param name="manifest">The <see cref="UpdaterManifest"/> retreived from CDN via <see cref="GetUpdateManifestAsync"/></param>
-        /// <returns></returns>
         /// <exception cref="InvalidDataException">The hash of the downloaded file does not match the hash of the manifest.</exception>
         public static async Task DownloadUpdateFile(UpdaterManifest manifest)
         {
             using HttpClient client = new HttpClient();
             using Stream responseStream = await client.GetStreamAsync(manifest.CompressedArtifact.Url);
 
-            await DownloadUpdateFileMockable(manifest, responseStream);
+            await DownloadUpdateFileMockable(manifest, responseStream).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -119,13 +139,19 @@ namespace Omukade.AutoPAR.Rainier
         /// </summary>
         /// <param name="manifest"></param>
         /// <param name="responseStream"></param>
-        /// <returns></returns>
         /// <exception cref="InvalidDataException"></exception>
         internal static async Task DownloadUpdateFileMockable(UpdaterManifest manifest, Stream responseStream)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(UpdateZipFilename));
+
+            string hashFilename = UpdateZipFilename + ".md5";
+            if(File.Exists(hashFilename))
+            {
+                File.Delete(hashFilename);
+            }
+
             using FileStream updateFileStream = new FileStream(UpdateZipFilename, FileMode.Create, FileAccess.Write, FileShare.None);
-            await responseStream.CopyToAsync(updateFileStream);
+            await responseStream.CopyToAsync(updateFileStream).ConfigureAwait(false);
             updateFileStream.Close();
 
             // Verify the downloaded file
@@ -134,6 +160,8 @@ namespace Omukade.AutoPAR.Rainier
             {
                 throw new InvalidDataException($"Downloaded update is corrupted (expected hash {manifest.CompressedArtifact.MD5}; actual {downloadedFileHash})");
             }
+
+            File.WriteAllText(UpdateZipFilename + ".md5", downloadedFileHash);
         }
 
         /// <summary>
